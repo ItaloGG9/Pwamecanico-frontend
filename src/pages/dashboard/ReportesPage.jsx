@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { ordenesApi, productosApi, clientesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { formatCLP, ESTADO_OT_LABELS } from "../../lib/utils.js";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function ReportesPage() {
-  const { data: ordenes = [] } = useQuery({ queryKey: ["ordenes"], queryFn: () => ordenesApi.listar().then(r => r.data) });
-  const { data: productos = [] } = useQuery({ queryKey: ["productos"], queryFn: () => productosApi.listar().then(r => r.data) });
-  const { data: clientes = [] } = useQuery({ queryKey: ["clientes"], queryFn: () => clientesApi.listar().then(r => r.data) });
+  const { data: ordenes = [] } = useQuery({ queryKey: ["ordenes"], queryFn: () => ordenesApi.listar().then(r => r.data), staleTime: STALE.ordenes });
+  const { data: productos = [] } = useQuery({ queryKey: ["productos"], queryFn: () => productosApi.listar().then(r => r.data), staleTime: STALE.productos });
+  const { data: clientes = [] } = useQuery({ queryKey: ["clientes"], queryFn: () => clientesApi.listar().then(r => r.data), staleTime: STALE.clientes });
 
   const entregadas = ordenes.filter(o => o.estado === "entregado");
   const totalIngresos = entregadas.reduce((s, o) => s + Number(o.total_final), 0);

@@ -1,17 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ordenesApi, productosApi, citasApi, clientesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { useAuthStore } from "../../stores/auth.js";
 import { formatCLP, ESTADO_OT_LABELS, ESTADO_OT_COLORS, cn } from "../../lib/utils.js";
 import { ClipboardList, Package, Users, AlertTriangle, CalendarDays, ChevronRight } from "lucide-react";
 
 export default function DashboardPage() {
   const usuario = useAuthStore((s) => s.usuario);
-  const { data: ordenes = [] } = useQuery({ queryKey: ["ordenes"], queryFn: () => ordenesApi.listar().then(r => r.data) });
-  const { data: productos = [] } = useQuery({ queryKey: ["productos"], queryFn: () => productosApi.listar().then(r => r.data) });
-  const { data: clientes = [] } = useQuery({ queryKey: ["clientes"], queryFn: () => clientesApi.listar().then(r => r.data) });
-  const { data: bajoStock = [] } = useQuery({ queryKey: ["bajo-stock"], queryFn: () => productosApi.bajoStock().then(r => r.data) });
-  const { data: citas = [] } = useQuery({ queryKey: ["citas"], queryFn: () => citasApi.listar().then(r => r.data) });
+  const { data: ordenes = [] } = useQuery({ queryKey: ["ordenes"], queryFn: () => ordenesApi.listar().then(r => r.data), staleTime: STALE.ordenes });
+  const { data: productos = [] } = useQuery({ queryKey: ["productos"], queryFn: () => productosApi.listar().then(r => r.data), staleTime: STALE.productos });
+  const { data: clientes = [] } = useQuery({ queryKey: ["clientes"], queryFn: () => clientesApi.listar().then(r => r.data), staleTime: STALE.clientes });
+  const { data: bajoStock = [] } = useQuery({ queryKey: ["bajo-stock"], queryFn: () => productosApi.bajoStock().then(r => r.data), staleTime: STALE.bajoStock });
+  const { data: citas = [] } = useQuery({ queryKey: ["citas"], queryFn: () => citasApi.listar().then(r => r.data), staleTime: STALE.citas });
 
   const ordenesActivas = ordenes.filter(o => o.estado !== "entregado");
   const totalIngresos = ordenes.filter(o => o.estado === "entregado").reduce((s, o) => s + Number(o.total_final), 0);

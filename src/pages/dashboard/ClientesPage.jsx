@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { clientesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { Plus, Search, User, Phone, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -14,6 +15,7 @@ export default function ClientesPage() {
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: () => clientesApi.listar().then(r => r.data),
+    staleTime: STALE.clientes,
   });
 
   const crear = useMutation({

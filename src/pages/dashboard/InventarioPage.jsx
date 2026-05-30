@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productosApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { formatCLP, cn } from "../../lib/utils.js";
 import { Plus, Search, AlertTriangle, Package, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
@@ -16,6 +17,7 @@ export default function InventarioPage() {
   const { data: productos = [], isLoading } = useQuery({
     queryKey: ["productos"],
     queryFn: () => productosApi.listar().then(r => r.data),
+    staleTime: STALE.productos,
   });
 
   const guardar = useMutation({

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ordenesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { formatCLP, ESTADO_OT_LABELS, ESTADO_OT_COLORS, cn } from "../../lib/utils.js";
 import { Search, ClipboardList, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
@@ -16,6 +17,7 @@ export default function OrdenesPage() {
   const { data: ordenes = [], isLoading } = useQuery({
     queryKey: ["ordenes"],
     queryFn: () => ordenesApi.listar().then(r => r.data),
+    staleTime: STALE.ordenes,
   });
 
   const cambiarEstado = useMutation({

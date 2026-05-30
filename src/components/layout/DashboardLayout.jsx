@@ -2,14 +2,42 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.js";
 import { LayoutDashboard, Package, CalendarDays, Users, ClipboardList, FileText, BarChart3, LogOut, Wrench } from "lucide-react";
 import { cn } from "../../lib/utils.js";
+import { queryClient, STALE } from "../../lib/queryClient.js";
+import { ordenesApi, productosApi, clientesApi, cotizacionesApi, citasApi } from "../../lib/api.js";
+import PwaInstallPrompt from "../PwaInstallPrompt.jsx";
 
 const nav = [
   { to: "/dashboard", label: "Inicio", icon: LayoutDashboard, end: true },
-  { to: "/dashboard/ordenes", label: "Órdenes de trabajo", icon: ClipboardList },
-  { to: "/dashboard/agenda", label: "Agenda", icon: CalendarDays },
-  { to: "/dashboard/clientes", label: "Clientes", icon: Users },
-  { to: "/dashboard/inventario", label: "Inventario", icon: Package },
-  { to: "/dashboard/cotizaciones", label: "Cotizaciones", icon: FileText },
+  {
+    to: "/dashboard/ordenes",
+    label: "Órdenes de trabajo",
+    icon: ClipboardList,
+    prefetch: () => queryClient.prefetchQuery({ queryKey: ["ordenes"], queryFn: () => ordenesApi.listar().then(r => r.data), staleTime: STALE.ordenes }),
+  },
+  {
+    to: "/dashboard/agenda",
+    label: "Agenda",
+    icon: CalendarDays,
+    prefetch: () => queryClient.prefetchQuery({ queryKey: ["citas"], queryFn: () => citasApi.listar().then(r => r.data), staleTime: STALE.citas }),
+  },
+  {
+    to: "/dashboard/clientes",
+    label: "Clientes",
+    icon: Users,
+    prefetch: () => queryClient.prefetchQuery({ queryKey: ["clientes"], queryFn: () => clientesApi.listar().then(r => r.data), staleTime: STALE.clientes }),
+  },
+  {
+    to: "/dashboard/inventario",
+    label: "Inventario",
+    icon: Package,
+    prefetch: () => queryClient.prefetchQuery({ queryKey: ["productos"], queryFn: () => productosApi.listar().then(r => r.data), staleTime: STALE.productos }),
+  },
+  {
+    to: "/dashboard/cotizaciones",
+    label: "Cotizaciones",
+    icon: FileText,
+    prefetch: () => queryClient.prefetchQuery({ queryKey: ["cotizaciones"], queryFn: () => cotizacionesApi.listar().then(r => r.data), staleTime: STALE.cotizaciones }),
+  },
   { to: "/dashboard/reportes", label: "Reportes", icon: BarChart3 },
 ];
 
@@ -28,12 +56,18 @@ export default function DashboardLayout() {
           <span className="font-semibold text-white text-sm">PWAmecanico</span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {nav.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end}
+          {nav.map(({ to, label, icon: Icon, end, prefetch }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              onMouseEnter={prefetch}
+              onFocus={prefetch}
               className={({ isActive }) => cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                 isActive ? "bg-brand-600 text-white" : "text-surface-400 hover:text-white hover:bg-white/5"
-              )}>
+              )}
+            >
               <Icon size={16} className="flex-shrink-0" />
               {label}
             </NavLink>
@@ -59,6 +93,7 @@ export default function DashboardLayout() {
           <Outlet />
         </div>
       </main>
+      <PwaInstallPrompt />
     </div>
   );
 }

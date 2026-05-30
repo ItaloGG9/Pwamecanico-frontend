@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { citasApi, clientesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { cn } from "../../lib/utils.js";
 import { CalendarDays, Plus, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -14,11 +15,13 @@ export default function AgendaPage() {
   const { data: citas = [], isLoading } = useQuery({
     queryKey: ["citas"],
     queryFn: () => citasApi.listar().then(r => r.data),
+    staleTime: STALE.citas,
   });
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
     queryFn: () => clientesApi.listar().then(r => r.data),
+    staleTime: STALE.clientes,
   });
 
   const crear = useMutation({

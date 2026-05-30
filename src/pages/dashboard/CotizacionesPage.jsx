@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cotizacionesApi } from "../../lib/api.js";
+import { STALE } from "../../lib/queryClient.js";
 import { formatCLP, formatFecha, cn } from "../../lib/utils.js";
 import { FileText, CheckCircle, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
@@ -17,6 +18,7 @@ export default function CotizacionesPage() {
   const { data: cotizaciones = [], isLoading } = useQuery({
     queryKey: ["cotizaciones"],
     queryFn: () => cotizacionesApi.listar().then(r => r.data),
+    staleTime: STALE.cotizaciones,
   });
 
   const aprobar = useMutation({
